@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест для Дашульки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+            font-family: 'Russo One', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .question-container {
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        .question-container.hidden {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .question {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 5px white, 0 0 10px white;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .question.hidden {
+            opacity: 0;
+        }
+
+        .answers {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .answer {
+            padding: 20px 40px;
+            font-size: 2rem;
+            border: 3px solid white;
+            border-radius: 15px;
+            cursor: pointer;
+            text-shadow: 0 0 5px white, 0 0 10px white;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.5s ease-in-out;
+            flex: 1 1 calc(50% - 40px);
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .answer:hover {
+            transform: scale(1.2);
+        }
+
+        .answer.wrong {
+            border-color: red;
+            text-shadow: 0 0 5px red, 0 0 10px red;
+        }
+
+        .heart {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            animation: fly 3s ease-out forwards;
+        }
+
+        @keyframes fly {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-150px + 300px * var(--x)), calc(-150px + 300px * var(--y))) scale(1.5);
+            }
+        }
+
+        .final-message {
+            font-size: 3rem;
+            text-shadow: 0 0 5px pink, 0 0 20px pink;
+            opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .final-message.visible {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .question {
+                font-size: 1.5rem;
+            }
+
+            .answer {
+                font-size: 1.5rem;
+                padding: 15px 30px;
+            }
+
+            .final-message {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .question {
+                font-size: 1.2rem;
+            }
+
+            .answer {
+                font-size: 1.2rem;
+                padding: 10px 20px;
+                flex: 1 1 100%;
+            }
+
+            .final-message {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="question-container" id="questionContainer">
+        <div class="question" id="question">Питання 1: Хто найкращий?</div>
+        <div class="answers" id="answers">
+            <div class="answer" onclick="wrongAnswer(this)">Левая типуха</div>
+            <div class="answer" onclick="wrongAnswer(this)">Продавщица в АТБ</div>
+        </div>
+    </div>
+    <div class="final-message" id="finalMessage">Дашенька найкраща любімінька!</div>
+
+    <script>
+        const questions = [
+            {
+                text: "Питання 1: Хто найкращий?",
+                answers: ["Левая типуха", "Продавщица в АТБ"]
+            },
+            {
+                text: "Питання 2: Хто моя любіма?",
+                answers: ["Уборщица", "Бомж"]
+            },
+            {
+                text: "Питання 3: Хто найрозумніший?",
+                answers: ["Павел Дуров", "Ілон Маск"]
+            },
+            {
+                text: "Питання 4: Хто завжди правий?",
+                answers: ["я", "я"]
+            },
+            {
+                text: "Питання 5: Хто наймиліший?",
+                answers: ["Риба", "Кот"]
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        function wrongAnswer(element) {
+            element.classList.add('wrong');
+            element.style.transform = 'scale(1.2)';
+
+            const questionElement = document.getElementById('question');
+            questionElement.classList.add('hidden');
+
+            setTimeout(() => {
+                questionElement.innerText = "Ні, це Дашулька!";
+                questionElement.classList.remove('hidden');
+                showHearts();
+
+                setTimeout(() => {
+                    element.classList.remove('wrong');
+                    element.style.transform = 'scale(1)';
+                    nextQuestion();
+                }, 3000);
+            }, 500);
+        }
+
+        function showHearts() {
+            for (let i = 0; i < 30; i++) {
+                const heart = document.createElement('img');
+                heart.src = 'png-transparent-pink-m-heart-design-love-heart-pink-m.png';
+                heart.classList.add('heart');
+                heart.style.setProperty('--x', Math.random() * 2 - 1);
+                heart.style.setProperty('--y', Math.random() * 2 - 1);
+                document.body.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 3000);
+            }
+        }
+
+        function nextQuestion() {
+            const questionContainer = document.getElementById('questionContainer');
+            const questionElement = document.getElementById('question');
+            const answersContainer = document.getElementById('answers');
+
+            questionContainer.classList.add('hidden');
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    const current = questions[currentQuestion];
+                    questionElement.innerText = current.text;
+
+                    // Оновлюємо варіанти відповідей
+                    answersContainer.innerHTML = "";
+                    current.answers.forEach(answer => {
+                        const button = document.createElement('div');
+                        button.classList.add('answer');
+                        button.innerText = answer;
+                        button.onclick = () => wrongAnswer(button);
+                        answersContainer.appendChild(button);
+                    });
+
+                    questionContainer.classList.remove('hidden');
+                } else {
+                    showFinalMessage();
+                }
+            }, 500);
+        }
+
+        function showFinalMessage() {
+            const questionContainer = document.querySelector('.question-container');
+            questionContainer.style.display = 'none';
+
+            const finalMessage = document.getElementById('finalMessage');
+            finalMessage.classList.add('visible');
+            showHearts();
+        }
+    </script>
+</body>
+</html>
